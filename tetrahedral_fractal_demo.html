@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tetrahedral Fractal Demo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+  <style>
+    body { margin: 0; display: flex; flex-direction: column; align-items: center; background: #000; color: #fff; font-family: Arial; }
+    canvas { border: 2px solid #333; }
+    #controls { margin: 10px; }
+    #description { max-width: 600px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <label for="depth">Fractal Depth: </label>
+    <input type="range" id="depth" min="1" max="4" value="2">
+  </div>
+  <div id="description">
+    <p>Explore a 3D tetrahedral fractal inspired by next-gen math and quantum unity. Adjust the slider to change complexity. Seeking coders and project managers to scale this vision! DM on X or GitHub.</p>
+  </div>
+<script>
+let depth = 2;
+let tetra;
+
+function setup() {
+  createCanvas(600, 400, WEBGL);
+  tetra = new TetrahedralFractal();
+  let slider = select('#depth');
+  slider.input(() => {
+    depth = parseInt(slider.value());
+  });
+}
+
+function draw() {
+  background(0);
+  ambientLight(50);
+  pointLight(255, 255, 255, 100, 100, 200);
+  rotateY(frameCount * 0.01);
+  rotateX(frameCount * 0.005);
+  tetra.draw(depth);
+}
+
+class TetrahedralFractal {
+  constructor() {
+    this.size = 100;
+  }
+
+  draw(depth) {
+    if (depth <= 0) {
+      this.drawTetrahedron(this.size);
+      return;
+    }
+    let newSize = this.size / 2;
+    push();
+    translate(0, -newSize * 1.5, 0);
+    this.drawTetrahedron(newSize);
+    pop();
+    push();
+    translate(-newSize * 1.2, newSize * 0.5, -newSize * 0.7);
+    this.draw(depth - 1);
+    pop();
+    push();
+    translate(newSize * 1.2, newSize * 0.5, -newSize * 0.7);
+    this.draw(depth - 1);
+    pop();
+    push();
+    translate(0, newSize * 0.5, newSize * 1.4);
+    this.draw(depth - 1);
+    pop();
+  }
+
+  drawTetrahedron(size) {
+    beginShape(TRIANGLES);
+    fill(150, 0, 255, 200);
+    vertex(0, -size, 0);
+    vertex(-size * 0.866, size * 0.5, -size * 0.5);
+    vertex(size * 0.866, size * 0.5, -size * 0.5);
+    fill(0, 255, 255, 200);
+    vertex(0, -size, 0);
+    vertex(-size * 0.866, size * 0.5, -size * 0.5);
+    vertex(0, size * 0.5, size);
+    fill(255, 0, 150, 200);
+    vertex(0, -size, 0);
+    vertex(size * 0.866, size * 0.5, -size * 0.5);
+    vertex(0, size * 0.5, size);
+    fill(255, 255, 0, 200);
+    vertex(-size * 0.866, size * 0.5, -size * 0.5);
+    vertex(size * 0.866, size * 0.5, -size * 0.5);
+    vertex(0, size * 0.5, size);
+    endShape();
+  }
+}
+</script>
+</body>
+</html>
